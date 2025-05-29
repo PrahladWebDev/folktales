@@ -1,14 +1,15 @@
-const express = require('express');
+import express from 'express';
+import Folktale from '../models/Folktale.js';
+import Comment from '../models/Comment.js';
+import Bookmark from '../models/Bookmark.js';
+import { auth } from '../middleware/auth.js';
+import { body, validationResult } from 'express-validator';
+import cloudinary from '../config/cloudinary.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs/promises'; // Use promises version for async/await
+
 const router = express.Router();
-const Folktale = require('../models/Folktale');
-const Comment = require('../models/Comment');
-const Bookmark = require('../models/Bookmark');
-const { auth } = require('../middleware/auth');
-const { body, validationResult } = require('express-validator');
-const cloudinary = require('../config/cloudinary');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 // Set up Multer for file uploads
 const storage = multer.diskStorage({
@@ -59,7 +60,7 @@ router.post(
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'folktales',
       });
-      fs.unlinkSync(req.file.path); // Delete temporary file
+      await fs.unlink(req.file.path); // Delete temporary file using promises
 
       const folktale = new Folktale({
         title: req.body.title,
@@ -223,7 +224,7 @@ router.put(
         const result = await cloudinary.uploader.upload(req.file.path, {
           folder: 'folktales',
         });
-        fs.unlinkSync(req.file.path); // Delete temporary file
+        await fs.unlink(req.file.path); // Delete temporary file using promises
         folktale.imageUrl = result.secure_url;
       }
 
@@ -367,4 +368,4 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

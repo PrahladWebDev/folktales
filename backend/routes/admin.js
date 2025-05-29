@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import Folktale from '../models/Folktale.js';
+import Comment from '../models/Comment.js';
+import { adminAuth } from '../middleware/auth.js';
+import sanitizeHtml from 'sanitize-html';
+import { body, validationResult } from 'express-validator';
+
 const router = express.Router();
-const Folktale = require('../models/Folktale');
-const Comment = require('../models/Comment');
-const { adminAuth } = require('../middleware/auth');
-const sanitizeHtml = require('sanitize-html'); // Import sanitize-html
-const { body, validationResult } = require('express-validator'); // Import express-validator
 
 // Validation middleware for folktale creation/update
 const folktaleValidation = [
@@ -122,7 +123,7 @@ router.get('/folktales', adminAuth, async (req, res) => {
           ...folktale._doc,
           comments,
           averageRating: folktale.ratings.length
-            ? (folktale.ratings.reduce((sum, r) => sum + r, 0) / folktale.ratings.length).toFixed(1)
+            ? (folktale.ratings.reduce((sum, r) => sum + r.rating, 0) / folktale.ratings.length).toFixed(1)
             : 'No ratings',
         };
       })
@@ -134,4 +135,4 @@ router.get('/folktales', adminAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

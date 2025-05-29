@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const folktaleSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -14,4 +14,4 @@ const folktaleSchema = new mongoose.Schema({
   }],
 });
 
-module.exports = mongoose.model('Folktale', folktaleSchema);
+export default mongoose.model('Folktale', folktaleSchema);
