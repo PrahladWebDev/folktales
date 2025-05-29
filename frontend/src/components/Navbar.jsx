@@ -1,23 +1,27 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import SearchBar from './SearchBar';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import SearchBar from "./SearchBar";
+import { FaBookmark } from "react-icons/fa";
 
 function Navbar() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const checkAdmin = async () => {
       if (token) {
         try {
-          const response = await axios.get('http://localhost:5000/api/auth/me', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const response = await axios.get(
+            "http://localhost:5000/api/auth/me",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           setIsAdmin(response.data.isAdmin);
         } catch (error) {
-          console.error('Error checking admin:', error);
+          console.error("Error checking admin:", error);
         }
       }
     };
@@ -25,8 +29,8 @@ function Navbar() {
   }, [token]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
@@ -139,49 +143,50 @@ function Navbar() {
         `}
       </style>
       <div className="nav-container">
-        <h1 className="logo" onClick={() => navigate('/')}>
+        <h1 className="logo" onClick={() => navigate("/")}>
           Folktale Haven
         </h1>
-        
+
         <div className="search-container">
           <SearchBar />
         </div>
 
         <div className="nav-buttons">
-          <button 
-            className="map-button"
-            onClick={() => navigate('/map')}
-          >
+          <button className="map-button" onClick={() => navigate("/map")}>
             <span>🌍</span> Map
           </button>
+
+          {/* 👉 Bookmark Icon Button */}
+          <button
+            className="map-button"
+            onClick={() => navigate("/bookmarks")}
+            title="Bookmarks"
+          >
+            <FaBookmark />
+          </button>
+
           {token ? (
             <>
               {isAdmin && (
-                <button 
-                  className="nav-button" 
-                  onClick={() => navigate('/admin')}
+                <button
+                  className="nav-button"
+                  onClick={() => navigate("/admin")}
                 >
                   Admin Panel
                 </button>
               )}
-              <button 
-                className="nav-button" 
-                onClick={handleLogout}
-              >
+              <button className="nav-button" onClick={handleLogout}>
                 Logout
               </button>
             </>
           ) : (
             <>
-              <button 
-                className="nav-button" 
-                onClick={() => navigate('/login')}
-              >
+              <button className="nav-button" onClick={() => navigate("/login")}>
                 Login
               </button>
-              <button 
-                className="nav-button primary-button" 
-                onClick={() => navigate('/register')}
+              <button
+                className="nav-button primary-button"
+                onClick={() => navigate("/register")}
               >
                 Register
               </button>
