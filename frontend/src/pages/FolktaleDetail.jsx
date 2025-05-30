@@ -16,35 +16,37 @@ function FolktaleDetail() {
   const [isBookmarked, setIsBookmarked] = useState(false); // State for bookmark status
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const fetchFolktaleAndBookmarks = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        // Fetch folktale details
-        const folktaleResponse = await axios.get(`http://localhost:5000/api/folktales/${id}`);
-        setFolktale(folktaleResponse.data);
+ useEffect(() => {
+  const fetchFolktaleAndBookmarks = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Fetch folktale details
+      const folktaleResponse = await axios.get(`http://localhost:5000/api/folktales/${id}`);
+      setFolktale(folktaleResponse.data);
 
-        // Fetch user's bookmarks if authenticated
-        if (token) {
-          const bookmarkResponse = await axios.get('http://localhost:5000/api/folktales/bookmark', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          // Check if current folktale is bookmarked
-          const isBookmarked = bookmarkResponse.data.some(
-            (bookmark) => bookmark.folktaleId._id === id
-          );
-          setIsBookmarked(isBookmarked);
+      // Fetch user's bookmarks if authenticated
+      if (token) {
+        const bookmarkResponse = await axios.get('http://localhost:5000/api/folktales/bookmark', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!Array.isArray(bookmarkResponse.data)) {
+          throw new Error('Bookmark data is not an array');
         }
-      } catch (error) {
-        console.error('Error fetching folktale or bookmarks:', error);
-        setError('Failed to load folktale. Please try again.');
-      } finally {
-        setIsLoading(false);
+        const isBookmarked = bookmarkResponse.data.some(
+          (bookmark) => bookmark.folktaleId && bookmark.folktaleId._id === id
+        );
+        setIsBookmarked(isBookmarked);
       }
-    };
-    fetchFolktaleAndBookmarks();
-  }, [id, token]);
+    } catch (error) {
+      console.error('Error fetching folktale or bookmarks:', error);
+      setError('Failed to load folktale or bookmarks. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchFolktaleAndBookmarks();
+}, [id, token]);
 
   const handleRate = async () => {
     if (!token) {
